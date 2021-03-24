@@ -33,7 +33,13 @@ namespace dotnet_rpg.Controllers
         {
             var response = await characterService.UpdateCharacter(updateCharacterDto);
             return response.Success ? Ok(response.Data) : NotFound();
+        }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCharacter(int id)
+        {
+            var response = await characterService.DeleteCharacter(id);
+            return response.Success ? Ok(response.Data) : NotFound();
         }
     }
 }
