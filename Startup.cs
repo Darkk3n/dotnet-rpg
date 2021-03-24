@@ -1,6 +1,8 @@
+using dotnet_rpg.Data;
 using dotnet_rpg.Services.CharacterService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +28,7 @@ namespace dotnet_rpg
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "dotnet_rpg", Version = "v1" });
             });
+            services.AddDbContext<DataContext>(r => r.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<ICharacterService, CharacterService>();
             services.AddAutoMapper(typeof(Startup));
         }
