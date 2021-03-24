@@ -23,11 +23,17 @@ namespace dotnet_rpg.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var characterFound = await characterService.GetCharacterById(id);
-            return characterFound == null ?
-            NotFound() :
-            Ok(characterFound);
+            return characterFound.Success ? NotFound() : Ok(characterFound);
         }
         [HttpPost]
         public async Task<IActionResult> AddCharacter(AddCharacterDto newCharacter) => Ok(await characterService.AddCharacter(newCharacter));
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateCharacter(UpdateCharacterDto updateCharacterDto)
+        {
+            var response = await characterService.UpdateCharacter(updateCharacterDto);
+            return response.Success ? Ok(response.Data) : NotFound();
+
+        }
     }
 }
