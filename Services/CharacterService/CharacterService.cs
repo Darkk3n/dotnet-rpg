@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using dotnet_rpg.Controllers;
 using dotnet_rpg.Models;
 
 namespace dotnet_rpg.Services.CharacterService
@@ -14,19 +15,28 @@ namespace dotnet_rpg.Services.CharacterService
                 new Character{Id=1,Name="Sam"}
             };
 
-        public async Task<List<Character>> AddCharacter(Character character)
+        public async Task<ServiceResponse<List<Character>>> AddCharacter(Character character)
         {
+            var response = new ServiceResponse<List<Character>>();
             Characters.Add(character);
-            return Characters;
+            response.Data = Characters;
+            return response;
         }
 
-        public async Task<List<Character>> GetAllCharacters() => Characters;
-
-        public async Task<Character> GetCharacterById(int id)
+        public async Task<ServiceResponse<List<Character>>> GetAllCharacters()
         {
-            return !Characters.Any(r => r.Id == id) ?
-                null :
-            Characters.FirstOrDefault(r => r.Id == id);
+            var response = new ServiceResponse<List<Character>>();
+            response.Data = Characters;
+            return response;
+        }
+
+        public async Task<ServiceResponse<Character>> GetCharacterById(int id)
+        {
+            var response = new ServiceResponse<Character>();
+            if (!Characters.Any(r => r.Id == id))
+                return null;
+            response.Data = Characters.FirstOrDefault(r => r.Id == id);
+            return response;
         }
     }
 }
