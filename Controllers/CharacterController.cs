@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using dotnet_rpg.Models;
 using dotnet_rpg.Services.CharacterService;
 using Microsoft.AspNetCore.Mvc;
@@ -18,17 +17,17 @@ namespace dotnet_rpg.Controllers
         }
 
         [HttpGet("GetAll")]
-        public IActionResult Get() => Ok(characterService.GetAllCharacters());
+        public async Task<IActionResult> Get() => Ok(await characterService.GetAllCharacters());
 
         [HttpGet("GetById/{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var characterFound = characterService.GetCharacterById(id);
+            var characterFound = await characterService.GetCharacterById(id);
             return characterFound == null ?
             NotFound() :
             Ok(characterFound);
         }
         [HttpPost]
-        public IActionResult AddCharacter(Character newCharacter) => Ok(characterService.AddCharacter(newCharacter));
+        public async Task<IActionResult> AddCharacter(Character newCharacter) => Ok(await characterService.AddCharacter(newCharacter));
     }
 }
