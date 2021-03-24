@@ -17,25 +17,23 @@ namespace dotnet_rpg.Controllers
             };
 
         [HttpGet("GetAll")]
-        public IActionResult Get()
-        {
-            return Ok(Characters);
-        }
+        public IActionResult Get() => Ok(Characters);
 
         [HttpGet]
-        public IActionResult GetSingle()
-        {
-            return Ok(Characters.FirstOrDefault());
-        }
+        public IActionResult GetSingle() => Ok(Characters.FirstOrDefault());
 
         [HttpGet("GetById/{id}")]
         public IActionResult GetById(int id)
         {
-            if(!Characters.Any(r=>r.Id==id))
-            {
-                return NotFound();
-            }
-            return Ok(Characters.FirstOrDefault(r=>r.Id==id));
+            return !Characters.Any(r => r.Id == id) ?
+                NotFound() :
+            Ok(Characters.FirstOrDefault(r => r.Id == id));
+        }
+        [HttpPost]
+        public IActionResult AddCharacter(Character newCharacter)
+        {
+            Characters.Add(newCharacter);
+            return Ok(Characters);
         }
     }
 }
