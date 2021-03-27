@@ -1,19 +1,29 @@
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using dotnet_rpg.Controllers;
 using dotnet_rpg.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace dotnet_rpg.Data
 {
     public class AuthRepository : IAuthRepository
     {
         private readonly DataContext context;
+        private readonly IConfiguration configuration;
 
-        public AuthRepository(DataContext context)
+        public AuthRepository(DataContext context, IConfiguration configuration)
         {
+            this.configuration = configuration;
             this.context = context;
         }
+
         public async Task<ServiceResponse<string>> Login(string userName, string password)
         {
             var response = new ServiceResponse<string>();
@@ -30,7 +40,7 @@ namespace dotnet_rpg.Data
                 response.Message = "Incorrect password";
                 return response;
             }
-            response.Data = user.Id.ToString();
+            response.Data = CreateToken(user);
             return response;
         }
 
@@ -81,6 +91,29 @@ namespace dotnet_rpg.Data
                 }
                 return true;
             }
+        }
+
+        private string CreateToken(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
+                new Claim(ClaimTypes.Name,user.UserName)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("AppSettings:Token").Value));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = creds
+            };
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.CreateToken(tokenDescriptor);
+            return handler.WriteToken(token);
         }
     }
 }
