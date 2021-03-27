@@ -45,9 +45,10 @@ namespace dotnet_rpg.Services.CharacterService
             var response = new ServiceResponse<List<GetCharacterDto>>();
             try
             {
-                var characterToRemove = Characters.First(r => r.Id == id);
-                Characters.Remove(characterToRemove);
-                response.Data = Characters.Select(r => mapper.Map<GetCharacterDto>(r)).ToList();
+                var characterToRemove = await context.Characters.FirstOrDefaultAsync(r => r.Id == id);
+                context.Characters.Remove(characterToRemove);
+                await context.SaveChangesAsync();
+                response.Data = context.Characters.Select(r => mapper.Map<GetCharacterDto>(r)).ToList();
                 response.Success = true;
             }
             catch (Exception ex)
@@ -73,6 +74,7 @@ namespace dotnet_rpg.Services.CharacterService
             try
             {
                 response.Data = mapper.Map<GetCharacterDto>(dbCharacter);
+                response.Success = true;
             }
             catch (Exception ex)
             {
@@ -87,7 +89,7 @@ namespace dotnet_rpg.Services.CharacterService
             var response = new ServiceResponse<GetCharacterDto>();
             try
             {
-                var currentCharacter = Characters.First(r => r.Id == updatedCharacter.Id);
+                var currentCharacter = await context.Characters.FirstOrDefaultAsync(r => r.Id == updatedCharacter.Id);
                 currentCharacter.Name = updatedCharacter.Name;
                 currentCharacter.Class = updatedCharacter.Class;
                 currentCharacter.Defense = updatedCharacter.Defense;
@@ -95,6 +97,8 @@ namespace dotnet_rpg.Services.CharacterService
                 currentCharacter.Intelligence = updatedCharacter.Intelligence;
                 currentCharacter.Strength = updatedCharacter.Strength;
 
+                context.Characters.Update(currentCharacter);
+                await context.SaveChangesAsync();
                 response.Data = mapper.Map<GetCharacterDto>(currentCharacter);
             }
             catch (Exception ex)
