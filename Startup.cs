@@ -30,6 +30,7 @@ namespace dotnet_rpg
             });
             services.AddDbContext<DataContext>(r => r.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<ICharacterService, CharacterService>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddAutoMapper(typeof(Startup));
         }
 
