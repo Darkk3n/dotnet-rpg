@@ -13,12 +13,6 @@ namespace dotnet_rpg.Services.CharacterService
 {
     public class CharacterService : ICharacterService
     {
-        private static Character Knight = new Character();
-        private static List<Character> Characters = new List<Character>
-            {
-                new Character(),
-                new Character{Id=1,Name="Sam"}
-            };
         private readonly IMapper mapper;
         private readonly DataContext context;
 
@@ -45,7 +39,7 @@ namespace dotnet_rpg.Services.CharacterService
             var response = new ServiceResponse<List<GetCharacterDto>>();
             try
             {
-                var characterToRemove = await context.Characters.FirstOrDefaultAsync(r => r.Id == id);
+                var characterToRemove = await context.Characters.FirstAsync(r => r.Id == id);
                 context.Characters.Remove(characterToRemove);
                 await context.SaveChangesAsync();
                 response.Data = context.Characters.Select(r => mapper.Map<GetCharacterDto>(r)).ToList();
